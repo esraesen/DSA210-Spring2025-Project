@@ -45,9 +45,3 @@ Data will be cleaned (e.g., standardizing formats, handling missing values) and 
 ### **Visualization**
 - **Scatter Plots**: Genre-specific trends in playtime and popularity will be explored.
 - **Bar Charts**: Top 5 genres by ownership and their average playtime will be compared.
-  
-## **Timeline**
-- **April 18**: Data collection, cleaning, EDA, and statistical analysis completed.
-- **May 23**: Visualizations finalized.
-- **May 30**: Final report submitted.
-
