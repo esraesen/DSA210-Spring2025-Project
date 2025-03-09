@@ -32,7 +32,7 @@ As a gamer, I’ve always wondered what drives a game’s success on Steam. Some
 ## **Analysis Plan**
 
 ### **Data Preparation**
-Data will be cleaned (e.g., standardizing formats, handling missing values) and merged to include only Steam-available games. **Games without a defined endpoint (e.g., competitive multiplayer or battle royale titles like *Dead by Daylight*, *CS:GO*, *PUBG*) will be excluded**, focusing on narrative-driven or completable games. Scraped HowLongToBeat data (Main + Extras) will be aligned with Steam data using game names.
+Data will be cleaned (e.g., standardizing formats, handling missing values) and merged to include only Steam-available games. **Games without a defined endpoint (e.g., competitive multiplayer or battle royale titles like *Dead by Daylight*, *CS:GO*, *PUBG*) will be excluded**, focusing on **narrative-driven** or **completable** games. Scraped HowLongToBeat data (Main + Extras) will be aligned with Steam data using game names.
 
 ### **Exploratory Data Analysis (EDA)**
 - **Bar Charts**: Average price and ownership numbers by genre will be visualized.
