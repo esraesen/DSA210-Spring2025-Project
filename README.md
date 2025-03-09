@@ -26,7 +26,7 @@ As a gamer, I’ve always wondered what drives a game’s success on Steam. Some
 ## Collection Plan
 - **Steam Game Data**:
   - Dataset will be downloaded as a CSV from Kaggle, loaded into Python with `pandas`, and cleaned (e.g., removing duplicates, handling missing values).
--- **HowLongToBeat Data**:
+- **HowLongToBeat Data**:
   - Data will be scraped from HowLongToBeat (https://howlongtobeat.com) using Python (e.g., `requests` and `BeautifulSoup`), targeting completion times (Main + Extras) for games available on Steam, then merged with Steam data using `pandas` on game names.
     
 ## **Analysis Plan**
