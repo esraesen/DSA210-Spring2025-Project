@@ -1,5 +1,5 @@
-# DSA210-Spring2025-ProjectProposal
-## Playtime Matters
+# Playtime Matters -DSA210ProjectProposal
+
 ## Project Overview
 This project examines Steam games to investigate how game genres (e.g., action, RPG) and prices relate to their playtime lengths and popularity. Using a Steam dataset from Kaggle for game details (genres, prices, estimated ownership) and a HowLongToBeat dataset for completion times, the connection between play duration and player engagement will be analyzed through simple visualizations and statistical methods. Since HowLongToBeat covers games across platforms, the analysis will focus on games available on Steam, leveraging their significant overlap. The goal is to understand how game length influences popularity and pricing trends on Steam.
 
