@@ -45,7 +45,3 @@ Data will be cleaned (e.g., standardizing formats, handling missing values) and 
 ### **Visualization**
 - **Scatter Plots**: Genre-specific trends in playtime and popularity will be explored.
 - **Bar Charts**: Top 5 genres by ownership and their average playtime will be compared.
-
-## **Notes**
-- AI tools (Grok, built by xAI) were used to assist with drafting the README outline, consulted Grok for organizing the README layout and section headings.
-- Analysis will be limited to games present in both datasets, with **games lacking a defined endpoint excluded** to maintain focus on completion-based playtime.
