@@ -10,7 +10,7 @@ This project examines Steam games to investigate how game genres such as action,
 - **Identify Trends**: Patterns linking genres, prices, playtime, and popularity will be identified.
 
 ## **Motivation**
-As a gamer, I've always been curious in what makes a game so popular on Steam. While some games offer brief, bite-sized pleasures, others need dozens of hours to finish. Does a game's time commitment affect how appealing it is to players? Driven by my interest about what makes some games unique, this project uses data science to investigate the relationship between gameplay durations and popularity on Steam.
+As someone who enjoys games, I’ve always wondered what makes a game so popular on Steam. Some games offer quick, fun moments, while others take dozens of hours to complete. Does the time a game takes to play affect how much players like it? Curious about what makes some games stand out, this project uses data science to explore the connection between gameplay length and popularity on Steam.
 
 ## Dataset
 - **Steam Game Data**:
