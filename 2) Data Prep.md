@@ -204,5 +204,5 @@ The cleaned dataset (`clean_merged_data.csv`) contains the following columns:
 
 ## Code
 
-The complete script for the merging and cleaning process is available in `clean_merged_data.py`:
+The complete script for the merging and cleaning process is available in [clean_merged_data.py](https://github.com/esraesen/DSA210-Spring2025-Project/blob/main/clean_merged_data.csv)
 
