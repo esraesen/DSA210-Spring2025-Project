@@ -46,3 +46,12 @@ The two datasets will be merged by matching game names, ensuring that only games
 ### **Visualization**
 - **Scatter Plots**: Genre-specific trends in playtime and popularity will be explored.
 - **Bar Charts**: Top 5 genres by ownership and their average playtime will be compared.
+
+# Report
+## Introduction
+The relationship between game genres, playtime lengths, prices, and popularity on Steam will be analyzed in this project. The main objective is to determine how these factors influence player engagement, as measured by ownership numbers and positive ratings. The hypothesis that longer playtimes lead to higher popularity for narrative-driven or completable games will be tested. Patterns will be identified to understand what drives game popularity on Steam, potentially informing better game selection or pricing strategies for players and developers.
+
+## Hypothesis
+- **Null Hypothesis (H0)**: There is no significant relationship between playtime length (main_extras) and game popularity (positive_ratings). An increase in playtime does not significantly affect popularity.
+- **Alternative Hypothesis (H1)**: There is a significant relationship between playtime length and game popularity. As playtime increases, game popularity also increases.
+
