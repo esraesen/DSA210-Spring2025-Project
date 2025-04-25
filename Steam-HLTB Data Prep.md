@@ -1,12 +1,12 @@
 # Steam-HLTB Data Prep - DSA210
 
-This document details the steps I took to prepare the Steam and HLTB datasets, including merging, cleaning, handling missing values, and describing the columns.
+This document outlines the steps to prepare the Steam and HLTB datasets, including merging, cleaning, handling missing values, and describing the columns.
 
 ## Data Preparation Steps
 
 ### 1. Merging the Datasets
 
-I merged the Steam dataset (`steam_store_games.csv`) and the HLTB dataset (`howlongtobeat_data.csv`) using the `name` column from the Steam dataset and the `title` column from the HLTB dataset, creating `merged_data.csv`.
+I merged the Steam dataset (`steam_store_games.csv`) and the HLTB dataset (`howlongtobeat_data.csv`) using the `name` and `title` columns, creating `merged_data.csv`.
 
 ```python
 import pandas as pd
@@ -16,8 +16,8 @@ from google.colab import drive
 drive.mount('/content/drive', force_remount=True)
 
 # Load datasets
-steam_games = pd.read_csv("/content/drive/My Drive/DSA210/project/steam_store_games.csv")  # Steam dataset
-howlongtobeat_data = pd.read_csv("/content/drive/My Drive/DSA210/project/howlongtobeat_data.csv")  # HLTB dataset
+steam_games = pd.read_csv("/content/drive/My Drive/DSA210/project/steam_store_games.csv")
+howlongtobeat_data = pd.read_csv("/content/drive/My Drive/DSA210/project/howlongtobeat_data.csv")
 
 # Check the datasets
 print("First 5 rows of the Steam dataset:")
@@ -37,15 +37,11 @@ merged_df.to_csv('/content/drive/My Drive/DSA210/project/merged_data.csv', index
 print("\nMerged dataset saved as 'merged_data.csv'.")
 ```
 
-This code mounts Google Drive to access the datasets, loads the two datasets, merges them into a single file using the `name` and `title` columns as the key with an inner join (keeping only the rows that match in both datasets), and saves the merged dataset as `merged_data.csv`. I also printed the first 5 rows of each dataset and the merged dataset to verify the data.
+This code merges the datasets using an inner join on the `name` and `title` columns and saves the result as `merged_data.csv`.
 
 ### 2. Removing Unnecessary Columns
 
-I removed columns that were not needed for analysis:
-
-- `appid`, `english`, `developer`, `publisher`, `genres_x`, `achievements`, `id`, `title`, `type`, `genres_y`, `release_na`, `release_eu`, `release_jp`, `categories`, `coop`, `versus`, `publishers`, `platforms_x`, `platforms_y`
-
-Additionally, I decided to keep only the `all_styles` column from the HLTB time-related columns and removed the others (`main_story`, `main_plus_extras`, `completionist`) to simplify the analysis and reduce the impact of missing values.
+I removed columns not needed for analysis, such as `appid`, `english`, `developer`, `publisher`, `genres_x`, and others.
 
 ```python
 # Drop unnecessary columns
@@ -57,13 +53,9 @@ columns_to_drop = [
     'platforms_x', 'platforms_y'
 ]
 merged_df = merged_df.drop(columns=columns_to_drop, errors='ignore')
-
-# Remove unnecessary HLTB time columns (keep only all_styles)
-hltb_columns_to_drop = ['main_story', 'main_plus_extras', 'completionist']
-merged_df = merged_df.drop(columns=hltb_columns_to_drop, errors='ignore')
 ```
 
-This code removes the specified columns that are irrelevant for the analysis. The `errors='ignore'` parameter ensures that the code does not fail if a column is not found. I also removed the HLTB time columns (`main_story`, `main_plus_extras`, `completionist`) to focus on `all_styles`, as it provides an average playtime across all play styles and has fewer missing values compared to the other HLTB columns.
+This removes irrelevant columns to simplify the dataset.
 
 ### 3. Renaming Columns
 
@@ -74,26 +66,26 @@ I renamed `steamspy_tags` to `genres` for clarity.
 merged_df = merged_df.rename(columns={'steamspy_tags': 'genres'})
 ```
 
-This renames the `steamspy_tags` column to `genres` for better readability and consistency, as it represents the game genres.
+This renames the `steamspy_tags` column to `genres` for better readability.
 
 ### 4. Converting and Formatting Time Columns
 
 #### 4.1. Ensuring Numeric Values
 
-I converted all time-related columns (`average_playtime`, `median_playtime`, `all_styles`) to numeric values to ensure they can be processed correctly.
+I converted time columns (`average_playtime`, `median_playtime`, `main_story`, `main_plus_extras`, `completionist`, `all_styles`) to numeric values.
 
 ```python
 # Convert time columns to numeric
-time_columns = ['average_playtime', 'median_playtime', 'all_styles']
+time_columns = ['average_playtime', 'median_playtime', 'main_story', 'main_plus_extras', 'completionist', 'all_styles']
 for col in time_columns:
     merged_df[col] = pd.to_numeric(merged_df[col], errors='coerce')
 ```
 
-This ensures that all time columns are numeric. The `errors='coerce'` parameter converts non-numeric values to `NaN`, which helps identify missing or invalid data.
+This ensures time columns are numeric, converting invalid values to `NaN`.
 
 #### 4.2. Steam Playtime Columns
 
-I converted `average_playtime` and `median_playtime` from minutes to hours and rounded them to 2 decimal places.
+I converted `average_playtime` and `median_playtime` from minutes to hours and rounded to 2 decimal places.
 
 ```python
 # Convert Steam playtime columns to hours and round to 2 decimals
@@ -101,45 +93,78 @@ merged_df['average_playtime'] = (merged_df['average_playtime'] / 60).round(2)
 merged_df['median_playtime'] = (merged_df['median_playtime'] / 60).round(2)
 ```
 
-This converts the Steam playtime columns from minutes to hours (by dividing by 60) and rounds the results to 2 decimal places for consistency and readability.
+This converts Steam playtime columns from minutes to hours and rounds them.
 
-#### 4.3. HLTB Playtime Column
+#### 4.3. HLTB Playtime Columns
 
-I rounded the `all_styles` column (already in hours) to 2 decimal places.
+I rounded the HLTB time columns to 2 decimal places.
 
 ```python
 # Round HLTB time columns to 2 decimals
-merged_df['all_styles'] = merged_df['all_styles'].round(2)
+hltb_time_columns = ['main_story', 'main_plus_extras', 'completionist', 'all_styles']
+for col in hltb_time_columns:
+    if col in merged_df.columns:
+        merged_df[col] = merged_df[col].round(2)
 ```
 
-This ensures that the `all_styles` column is rounded to 2 decimal places, maintaining consistency with the Steam playtime columns.
+This rounds HLTB time columns for consistency.
 
 ### 5. Handling Missing Values
 
-I checked for missing values in the dataset and found that the `all_styles` column had a significant amount of missing data (48.13%, or 5,818 out of 12,089 rows). The `main_story`, `main_plus_extras`, and `completionist` columns had even higher missing value rates (60.64%, 70.28%, and 63.09%, respectively), which is why I decided to remove them and focus on `all_styles`.
-
-To handle the missing values in `all_styles`, I removed the rows where `all_styles` was missing, as filling them with estimated values (e.g., median) could distort the analysis given the high percentage of missing data.
+I checked for missing values and removed columns with more than 50% missing data (`main_story`, `main_plus_extras`, `completionist`). Then, I removed rows with missing values in the remaining time columns.
 
 ```python
 # Check for missing values
-print("\nMissing Values in Each Column:")
+print("\nMissing Values in。各 Column:")
 print(merged_df.isnull().sum())
 print("\nPercentage of Missing Values in Each Column:")
 print(merged_df.isnull().sum() / len(merged_df) * 100)
 
-# Drop rows with missing values in all_styles
-merged_df = merged_df.dropna(subset=['all_styles'])
+# Drop columns with more than 50% missing values
+missing_percentage = merged_df.isnull().sum() / len(merged_df) * 100
+columns_to_drop_high_missing = missing_percentage[missing_percentage > 50].index
+merged_df = merged_df.drop(columns=columns_to_drop_high_missing)
+print("\nColumns Dropped Due to High Missing Values (>50%):")
+print(columns_to_drop_high_missing.tolist())
+
+# Update time_columns after dropping high-missing columns
+time_columns = [col for col in time_columns if col in merged_df.columns]
+```
+
+This removes columns like `main_story` (60.64% missing), `main_plus_extras` (70.28% missing), and `completionist` (63.09% missing) due to high missing value rates, keeping `all_styles` (48.13% missing).
+
+### 6. Renaming HLTB Time Column
+
+I renamed the `all_styles` column to `average_completion_time` for clarity.
+
+```python
+# Rename 'all_styles' to 'average_completion_time'
+if 'all_styles' in merged_df.columns:
+    merged_df = merged_df.rename(columns={'all_styles': 'average_completion_time'})
+    # Update time_columns to reflect the new column name
+    time_columns = ['average_playtime', 'median_playtime', 'average_completion_time']
+```
+
+This renames the `all_styles` column to `average_completion_time` to better reflect its meaning.
+
+### 7. Removing Rows with Missing Values
+
+I removed rows with missing values in the remaining time columns (`average_playtime`, `median_playtime`, `average_completion_time`).
+
+```python
+# Drop rows with missing values in remaining time columns
+merged_df = merged_df.dropna(subset=time_columns)
 
 # Check for missing values after dropping rows
 print("\nMissing Values After Dropping Rows:")
 print(merged_df.isnull().sum())
 ```
 
-This code first checks the number and percentage of missing values in each column. Since `all_styles` had 48.13% missing values, I removed the rows where `all_styles` was missing using `dropna()`. After this step, the dataset was reduced from 12,089 rows to 6,271 rows, but `all_styles` now has no missing values. I also checked the missing values again to confirm that the operation was successful.
+This removes rows with missing values in the remaining time columns, reducing the dataset from 12,089 rows to 6,271 rows.
 
-### 6. Final Dataset Inspection and Saving
+### 8. Final Dataset Inspection and Saving
 
-I inspected the final dataset and saved it as `clean_merged_data.csv`, ensuring that floating-point numbers are saved with 2 decimal places.
+I inspected the final dataset and saved it as `clean_merged_data.csv`.
 
 ```python
 # Check the dataset
@@ -153,44 +178,31 @@ merged_df.to_csv('/content/drive/My Drive/DSA210/project/clean_merged_data.csv',
 print("\nUpdated dataset saved as 'clean_merged_data.csv'.")
 ```
 
-This code prints the first 5 rows of the final dataset, its shape (number of rows and columns), and the list of columns to verify the cleaning process. The dataset is then saved as `clean_merged_data.csv` with floating-point numbers formatted to 2 decimal places.
+This saves the cleaned dataset with floating-point numbers rounded to 2 decimal places.
 
 ## Final Columns and Descriptions
 
-The cleaned dataset (`clean_merged_data.csv`) contains the following columns after all processing steps:
+The cleaned dataset (`clean_merged_data.csv`) contains the following columns:
 
-| **Column**         | **Description**                                      | **Source** |
-|---------------------|-----------------------------------------------------|------------|
-| `name`             | Name of the game                                    | Steam      |
-| `release_date`     | Release date of the game (YYYY-MM-DD)              | Steam      |
-| `required_age`     | Minimum age required to play the game (e.g., 0 for all ages) | Steam      |
-| `genres`           | Game genres (e.g., "RPG;Indie;Simulation")         | Steam      |
-| `positive_ratings` | Number of positive reviews on Steam                | Steam      |
-| `negative_ratings` | Number of negative reviews on Steam                | Steam      |
-| `average_playtime` | Average playtime on Steam (hours, rounded to 2 decimals) | Steam      |
-| `median_playtime`  | Median playtime on Steam (hours, rounded to 2 decimals) | Steam      |
-| `owners`           | Estimated number of owners (e.g., "50000-100000")  | Steam      |
-| `price`            | Price of the game on Steam (USD)                   | Steam      |
-| `all_styles`       | Average playtime across all play styles (hours, rounded to 2 decimals) | HLTB       |
-| `developers`       | Developers of the game                             | HLTB       |
+| **Column**               | **Description**                                      | **Source** |
+|---------------------------|-----------------------------------------------------|------------|
+| `name`                   | Name of the game                                    | Steam      |
+| `release_date`           | Release date of the game (YYYY-MM-DD)              | Steam      |
+| `required_age`           | Minimum age required to play the game              | Steam      |
+| `genres`                 | Game genres (e.g., "RPG;Indie;Simulation")         | Steam      |
+| `positive_ratings`       | Number of positive reviews on Steam                | Steam      |
+| `negative_ratings`       | Number of negative reviews on Steam                | Steam      |
+| `average_playtime`       | Average playtime on Steam (hours)                  | Steam      |
+| `median_playtime`        | Median playtime on Steam (hours)                   | Steam      |
+| `owners`                 | Estimated number of owners (e.g., "50000-100000")  | Steam      |
+| `price`                  | Price of the game on Steam (USD)                   | Steam      |
+| `average_completion_time`| Average playtime across all play styles (hours)    | HLTB       |
+| `developers`             | Developers of the game                             | HLTB       |
 
-- **Notes on Columns:**
-  - The `main_story`, `main_plus_extras`, and `completionist` columns were removed due to their high missing value rates (60.64%, 70.28%, and 63.09%, respectively).
-  - The `all_styles` column was kept as it had the lowest missing value rate among the HLTB time columns (48.13%), and rows with missing `all_styles` values were removed.
-  - The final dataset has 6,271 rows and 12 columns, reduced from the initial 12,089 rows due to the removal of rows with missing `all_styles` values.
+- The final dataset has 6,271 rows and 12 columns, reduced from 12,089 rows after removing rows with missing values.
 
-## Sample Data
-
-A sample of the time-related columns in the final dataset:
-
-| **average_playtime** | **median_playtime** | **all_styles** |
-|----------------------|---------------------|----------------|
-| 4.62                 | 1.03                | 4.50           |
-| 3.12                 | 0.57                | 4.50           |
-| 4.30                 | 3.07                | 4.50           |
-| 10.40                | 6.92                | 6.00           |
-| 2.92                 | 0.17                | 4.50           |
 
 ## Code
 
 The complete script for the merging and cleaning process is available in `clean_merged_data.py`:
+
