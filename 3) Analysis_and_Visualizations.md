@@ -56,6 +56,9 @@ else:
 Three visualizations were created to further explore the relationships between playtime, popularity, and genres.
 
 ### Visualization 1: Scatter Plot (Average Completion Time vs Positive Ratings)
+
+![image](https://github.com/user-attachments/assets/05fc8d32-6fb5-43ab-bbec-fa11f27488c9)
+
 A scatter plot was created to visualize the relationship between `average_completion_time` and `positive_ratings`. The plot shows a slight upward trend, but with significant spread, confirming the weak positive relationship identified in the correlation analysis (coefficient: 0.165). Most games have completion times under 200 hours, with positive ratings generally below 50,000. A few outliers with longer completion times (up to 800 hours) have higher ratings (up to 300,000), but these are rare. This indicates that while longer playtimes are associated with higher popularity, the effect is not strong.
 
 ### Visualization 2: Bar Chart (Average Completion Time by Genre)
@@ -66,6 +69,8 @@ A bar chart was created to show the average completion time for the top 5 genres
 - **Action:** 9.0 hours
 - **Indie:** 8.5 hours
 - **Casual:** 7.5 hours
+  
+![image](https://github.com/user-attachments/assets/45f5ebd3-96eb-4973-8476-15b41ba1bb09)
 
 Strategy games have the longest average completion time at 17.5 hours, suggesting that this genre typically involves more complex and time-intensive gameplay. In contrast, Casual games have the shortest completion time at 7.5 hours, indicating shorter and lighter gameplay experiences. Action, Indie, and Adventure genres fall in between, with completion times ranging from 8.5 to 9.5 hours.
 
@@ -77,6 +82,8 @@ A bar chart was created to show the average number of owners for the top 5 genre
 - **Indie:** 100,000 owners
 - **Adventure:** 75,000 owners
 - **Casual:** 50,000 owners
+
+![image](https://github.com/user-attachments/assets/c10ca8ae-d2a2-4caa-8940-03f3589b4ec7)
 
 Action games have the highest average ownership at 200,000, indicating that this genre is highly popular on Steam. Strategy games follow closely with 175,000 owners, also showing strong popularity. Indie and Adventure genres have moderate ownership numbers at 100,000 and 75,000, respectively. Casual games have the lowest ownership at 50,000, suggesting they appeal to a smaller, more niche audience.
 
@@ -148,3 +155,4 @@ plt.ylabel('Genre')
 plt.savefig('/content/drive/My Drive/DSA210/project/bar_genre_ownership.png')
 plt.close()
 ```
+
