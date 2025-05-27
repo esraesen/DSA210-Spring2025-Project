@@ -255,7 +255,8 @@ plt.close()
   ```
 
   - **Graph:**
-    <img src="data:image/png;base64,{{feature_importance_base64}}" alt="Feature Importance in Decision Tree Model" width="600"/>
+  - ![image](https://github.com/user-attachments/assets/fe7ef9d8-111f-4596-9ac0-8f1d9f9227cd)
+
   - **Comment:** `owners_numeric` (0.642) and `average_completion_time` (0.195) are the most influential features, indicating that user base and playtime significantly affect positive ratings.
 
 ### Step 4: Actual vs Predicted Visualization
@@ -278,7 +279,8 @@ plt.close()
   ```
 
   - **Graph:**
-    <img src="data:image/png;base64,{{actual_vs_predicted_base64}}" alt="Actual vs Predicted Positive Ratings" width="600"/>
+  - ![image](https://github.com/user-attachments/assets/481d734d-a5f4-47d6-b316-f35806022382)
+
   - **Comment:** The model performs well for low ratings but struggles with higher values (e.g., 400,000+), as shown by deviations from the red line.
 
 ## Conclusion
