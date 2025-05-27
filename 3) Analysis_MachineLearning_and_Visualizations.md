@@ -156,3 +156,131 @@ plt.savefig('/content/drive/My Drive/DSA210/project/bar_genre_ownership.png')
 plt.close()
 ```
 
+# Analysis and Visualizations (Machine Learning)
+
+## Machine Learning Process
+
+### Step 1: Data Preparation
+- **Description:** Loaded and cleaned the dataset (`clean_merged_data.csv`). Converted categorical `genres` to numerical using one-hot encoding and normalized `owners` to `owners_numeric`.
+- **Code:**
+  ```python
+  # Import necessary libraries
+  import pandas as pd
+  import numpy as np
+
+  # Mount Google Drive
+  from google.colab import drive
+  drive.mount('/content/drive', force_remount=True)
+
+  # Load dataset
+  df = pd.read_csv('/content/drive/My Drive/DSA210/project/clean_merged_data.csv')
+
+  # Convert genres to one-hot encoding
+  df['genres'] = df['genres'].str.split(';')
+  df_exploded = df.explode('genres')
+  df_encoded = pd.get_dummies(df_exploded, columns=['genres'], prefix='genres')
+  df_encoded = df_encoded.groupby(df_encoded.index).sum().reset_index()
+
+  # Convert owners to numeric
+  def convert_owners_to_numeric(owners_str):
+      if isinstance(owners_str, str):
+          bounds = owners_str.replace(',', '').split('-')
+          lower = int(bounds[0])
+          upper = int(bounds[1])
+          return (lower + upper) / 2 / 1000000  # Normalize to millions
+      return 0
+
+  df_encoded['owners_numeric'] = df_encoded['owners'].apply(convert_owners_to_numeric)
+
+  # Drop missing values
+  df_encoded = df_encoded.dropna()
+  ```
+
+### Step 2: Model Training and Evaluation
+- **Description:** Split data into training and test sets, trained a Decision Tree Regressor, and evaluated its performance using R² and RMSE metrics.
+- **Code:**
+  ```python
+  # Import machine learning libraries
+  from sklearn.model_selection import train_test_split
+  from sklearn.tree import DecisionTreeRegressor
+  from sklearn.metrics import r2_score, mean_squared_error
+
+  # Define features and target
+  features = ['average_completion_time', 'owners_numeric'] + [col for col in df_encoded.columns if col.startswith('genres_')]
+  X = df_encoded[features]
+  y = df_encoded['positive_ratings']
+
+  # Split data
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+  # Train Decision Tree model
+  model = DecisionTreeRegressor(max_depth=10, random_state=42)
+  model.fit(X_train, y_train)
+
+  # Predict and evaluate
+  y_pred = model.predict(X_test)
+  r2 = r2_score(y_test, y_pred)
+  rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+  print(f"R² Score: {r2:.3f}")
+  print(f"RMSE: {rmse:.0f}")
+  ```
+
+### Step 3: Feature Importance Visualization
+- **Description:** Created a bar chart to show the importance of features in the model, with `owners_numeric` and `average_completion_time` being the most significant.
+- **Code:**
+  ```python
+  # Import plotting library
+  import matplotlib.pyplot as plt
+  import os
+
+  # Define output directory
+  output_dir = '/content/drive/My Drive/DSA210/project/'
+  if not os.path.exists(output_dir):
+      os.makedirs(output_dir)
+
+  # Create feature importance plot
+  feature_importance = pd.DataFrame({'feature': features, 'importance': model.feature_importances_})
+  feature_importance = feature_importance[feature_importance['importance'] > 0].sort_values(by='importance', ascending=False).head(10)
+
+  plt.figure(figsize=(12, 8))
+  plt.barh(feature_importance['feature'], feature_importance['importance'])
+  plt.title('Feature Importance in Decision Tree Model (Top 10, Non-Zero)', fontsize=14)
+  plt.xlabel('Importance', fontsize=12)
+  plt.ylabel('Feature', fontsize=12)
+  plt.yticks(fontsize=10)
+  plt.tight_layout()
+  feature_importance_path = os.path.join(output_dir, 'feature_importance_decision_tree.png')
+  plt.savefig(feature_importance_path, bbox_inches='tight')
+  plt.close()
+  ```
+
+  - **Graph:**
+    <img src="data:image/png;base64,{{feature_importance_base64}}" alt="Feature Importance in Decision Tree Model" width="600"/>
+  - **Comment:** `owners_numeric` (0.642) and `average_completion_time` (0.195) are the most influential features, indicating that user base and playtime significantly affect positive ratings.
+
+### Step 4: Actual vs Predicted Visualization
+- **Description:** Generated a scatter plot to compare actual and predicted `positive_ratings`, showing model performance with R² = 0.574 and RMSE = 15416.
+- **Code:**
+  ```python
+  # Create actual vs predicted plot
+  plt.figure(figsize=(10, 8))
+  plt.scatter(y_test, y_pred, alpha=0.3, s=30, color='blue')
+  plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+  plt.title('Actual vs Predicted Positive Ratings', fontsize=14)
+  plt.xlabel('Actual Positive Ratings', fontsize=12)
+  plt.ylabel('Predicted Positive Ratings', fontsize=12)
+  plt.text(0.05, 0.95, f'R²: {r2:.3f}\nRMSE: {rmse:.0f}', transform=plt.gca().transAxes, fontsize=12,
+           verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+  plt.tight_layout()
+  actual_vs_predicted_path = os.path.join(output_dir, 'actual_vs_predicted_decision_tree.png')
+  plt.savefig(actual_vs_predicted_path, bbox_inches='tight')
+  plt.close()
+  ```
+
+  - **Graph:**
+    <img src="data:image/png;base64,{{actual_vs_predicted_base64}}" alt="Actual vs Predicted Positive Ratings" width="600"/>
+  - **Comment:** The model performs well for low ratings but struggles with higher values (e.g., 400,000+), as shown by deviations from the red line.
+
+## Conclusion
+The Decision Tree model successfully predicted `positive_ratings` with an R² of 0.574. Key features like `owners_numeric` and `average_completion_time` drive the predictions. Future improvements could include trying Random Forest or optimizing hyperparameters to enhance performance.
+
