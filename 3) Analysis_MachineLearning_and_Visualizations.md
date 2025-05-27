@@ -156,7 +156,7 @@ plt.savefig('/content/drive/My Drive/DSA210/project/bar_genre_ownership.png')
 plt.close()
 ```
 
-# Analysis and Visualizations (Machine Learning)
+# Machine Learning
 
 ## Machine Learning Process
 
