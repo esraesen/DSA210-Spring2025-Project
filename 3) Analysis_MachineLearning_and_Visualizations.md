@@ -1,6 +1,6 @@
 # Analysis and Visualizations 
 
-This document contains the statistical analysis and visualizations for the Playtime Matters project. The goal is to explore the relationship between game playtime, genres, prices, and popularity on Steam.
+This document contains the statistical analysis, machine learning process and visualizations for the Playtime Matters project. The goal is to explore the relationship between game playtime, genres, prices, and popularity on Steam.
 
 ## Hypothesis Testing
 
