@@ -64,15 +64,15 @@ A scatter plot was created to visualize the relationship between `average_comple
 ### Visualization 2: Bar Chart (Average Completion Time by Genre)
 A bar chart was created to show the average completion time for the top 5 genres:
 
-- **Strategy:** 17.5 hours
-- **Adventure:** 9.5 hours
-- **Action:** 9.0 hours
-- **Indie:** 8.5 hours
-- **Casual:** 7.5 hours
+- **Strategy:** 16.5 hours
+- **Adventure:** 6.5 hours
+- **Action:** 6.2 hours
+- **Indie:** 5.8 hours
+- **Casual:** 5 hours
   
 ![image](https://github.com/user-attachments/assets/45f5ebd3-96eb-4973-8476-15b41ba1bb09)
 
-Strategy games have the longest average completion time at 17.5 hours, suggesting that this genre typically involves more complex and time-intensive gameplay. In contrast, Casual games have the shortest completion time at 7.5 hours, indicating shorter and lighter gameplay experiences. Action, Indie, and Adventure genres fall in between, with completion times ranging from 8.5 to 9.5 hours.
+Strategy games have the longest average completion time at 16.5 hours, suggesting that this genre typically involves more complex and time-intensive gameplay. In contrast, Casual games have the shortest completion time at 5 hours, indicating shorter and lighter gameplay experiences. Action, Indie, and Adventure genres fall in between, with completion times ranging from 5.8 to 6.5 hours.
 
 ### Visualization 3: Bar Chart (Average Ownership by Genre)
 A bar chart was created to show the average number of owners for the top 5 genres:
