@@ -283,7 +283,7 @@ plt.close()
 
   - **Comment:** The model performs well for low ratings but struggles with higher values (e.g., 400,000+), as shown by deviations from the red line.
 
-### Step 5: Cross-Validation
+### Step 5: Decision Tree Cross-Validation
 - **Description:** Performed 5-fold cross-validation to assess the Decision Tree model's generalization ability. Calculated R² and RMSE scores for each fold and visualized the results to evaluate consistency.
 - **Code:**
   ```python
@@ -343,8 +343,72 @@ plt.close()
 
   - **Comment:** The cross-validation results show an average R² of 0.368, lower than the single split (0.574), indicating potential overfitting. The high variability in R² (std dev: 0.412) and RMSE (std dev: 17,355) across folds suggests inconsistent performance, possibly due to data imbalance or limited features.
 
-### Step 6: Random Forest Model and Cross-Validation
-- **Description:** Trained a Random Forest Regressor and evaluated it using 5-fold cross-validation to compare with Decision Tree. Random Forest was chosen to reduce overfitting through ensemble learning.
+
+#### Step 6: Random Forest Model Training and Evaluation
+--
+- *Description:* Trained a Random Forest Regressor on a single train-test split to compare with Decision Tree. Evaluated its performance using R² and RMSE metrics.
+--
+- *Code:*
+```python
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+# Define features and target (same as before)
+features = ['average_completion_time', 'owners_numeric'] + [col for col in df_encoded.columns if col.startswith('genres_')]
+X = df_encoded[features]
+y = df_encoded['positive_ratings']
+
+# Split data (same split as Decision Tree)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize the Random Forest model
+rf_model = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42)
+
+# Train Random Forest model
+rf_model.fit(X_train, y_train)
+
+# Predict and evaluate
+rf_y_pred = rf_model.predict(X_test)
+rf_r2 = r2_score(y_test, rf_y_pred)
+rf_rmse = np.sqrt(mean_squared_error(y_test, rf_y_pred))
+print(f"Random Forest R² Score: {rf_r2:.3f}")
+print(f"Random Forest RMSE: {rf_rmse:.0f}")
+
+# Define output directory
+output_dir = '/content/drive/My Drive/DSA210/project/'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# Create actual vs predicted plot for Random Forest
+plt.figure(figsize=(10, 8))
+plt.scatter(y_test, rf_y_pred, alpha=0.3, s=30, color='green')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+plt.title('Random Forest: Actual vs Predicted Positive Ratings', fontsize=14)
+plt.xlabel('Actual Positive Ratings', fontsize=12)
+plt.ylabel('Predicted Positive Ratings', fontsize=12)
+plt.text(0.05, 0.95, f'R²: {rf_r2:.3f}\nRMSE: {rf_rmse:.0f}', transform=plt.gca().transAxes, fontsize=12,
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+plt.tight_layout()
+rf_actual_vs_predicted_path = os.path.join(output_dir, 'actual_vs_predicted_random_forest.png')
+plt.savefig(rf_actual_vs_predicted_path, bbox_inches='tight')
+plt.close()
+```
+- **Results:**
+    - Random Forest R² Score: 0.564
+    - Random Forest RMSE: 15595
+    
+ - **Graph:**
+  - ![image](https://github.com/user-attachments/assets/eebf8c6b-4ccc-4ae9-b7a2-80ec0cf6f830)
+
+
+  - **Comment:** Random Forest’s R² of 0.564 is slightly lower than Decision Tree’s 0.574 on the same train-test split, but its RMSE (15,595) is marginally better than Decision Tree’s (15,416). The actual vs predicted plot shows that Random Forest also struggles with higher ratings (e.g., 400,000+), similar to Decision Tree, but the ensemble approach may provide more robustness in cross-validation.
+    
+### Step 7: Random Forest Cross-Validation
+- **Description:**Performed 5-fold cross-validation on the Random Forest model to assess its generalization ability and compare with Decision Tree.
 - **Code:**
   ```python
     from sklearn.ensemble import RandomForestRegressor
@@ -406,7 +470,7 @@ plt.close()
 
 
 ## Conclusion
-- **Summary:** The Decision Tree model achieved an R² of 0.574 on a single train-test split, but cross-validation showed a lower average R² of 0.368. Random Forest performed better with an average R² of 0.479 and RMSE of 16,119. Key features like owners_numeric and average_completion_time drive predictions in both models.
+- **Summary:** The Decision Tree model achieved an R² of 0.574 and RMSE of 15,416 on a single train-test split, but cross-validation showed a lower average R² of 0.368 and RMSE of 17,770. Random Forest had an R² of 0.564 and RMSE of 15,595 on the same train-test split, with cross-validation showing an average R² of 0.479 and RMSE of 16,119. Key features like owners_numeric and average_completion_time drive predictions in both models.
 - **Model Choice Rationale:** Decision Tree was chosen for its interpretability, while Random Forest was added to improve generalization through ensemble learning.
-- **Model Comparison:** Random Forest outperformed Decision Tree with a higher average R² (0.479 vs 0.368) and lower RMSE (16,119 vs 17,770). It also showed lower variability (std dev R²: 0.132 vs 0.412; RMSE: 11,286 vs 17,355), suggesting better consistency due to its ensemble approach.
+- **Model Comparison:** On the train-test split, Decision Tree slightly outperformed Random Forest in R² (0.574 vs 0.564), but Random Forest had a marginally better RMSE (15,595 vs 15,416). In cross-validation, Random Forest outperformed Decision Tree with a higher average R² (0.479 vs 0.368) and lower RMSE (16,119 vs 17,770), and showed lower variability (std dev R²: 0.132 vs 0.412; RMSE: 11,286 vs 17,355), indicating better consistency and generalization due to its ensemble approach.
 - **Future Improvements:** Hyperparameter tuning (e.g., max_depth, n_estimators) or collecting more data could further enhance performance.
