@@ -283,6 +283,130 @@ plt.close()
 
   - **Comment:** The model performs well for low ratings but struggles with higher values (e.g., 400,000+), as shown by deviations from the red line.
 
-## Conclusion
-The Decision Tree model successfully predicted `positive_ratings` with an R² of 0.574. Key features like `owners_numeric` and `average_completion_time` drive the predictions. Future improvements could include trying Random Forest or optimizing hyperparameters to enhance performance.
+### Step 5: Cross-Validation
+- **Description:** Performed 5-fold cross-validation to assess the Decision Tree model's generalization ability. Calculated R² and RMSE scores for each fold and visualized the results to evaluate consistency.
+- **Code:**
+  ```python
+    from sklearn.model_selection import cross_val_score
+    
+    # Perform 5-fold cross-validation for R² score
+    cv_r2_scores = cross_val_score(model, X, y, cv=5, scoring='r2')
+    print("Cross-Validation R² Scores:", cv_r2_scores)
+    print("Average R²:", cv_r2_scores.mean())
+    print("Standard Deviation of R²:", cv_r2_scores.std())
+    
+    # Perform 5-fold cross-validation for RMSE
+    def rmse_scorer(model, X, y):
+        return np.sqrt(mean_squared_error(y, model.predict(X)))
+    
+    cv_mse_scores = cross_val_score(model, X, y, cv=5, scoring='neg_mean_squared_error')
+    cv_rmse_scores = np.sqrt(-cv_mse_scores)
+    print("Cross-Validation RMSE Scores:", cv_rmse_scores)
+    print("Average RMSE:", cv_rmse_scores.mean())
+    print("Standard Deviation of RMSE:", cv_rmse_scores.std())
+    
+    # Create bar plot for Cross-Validation R² and RMSE scores
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # R² Scores Bar Plot
+    ax[0].bar(range(1, 6), cv_r2_scores, color='#66B2FF', alpha=0.7)
+    ax[0].set_title('Cross-Validation R² Scores per Fold', fontsize=12)
+    ax[0].set_xlabel('Fold', fontsize=10)
+    ax[0].set_ylabel('R² Score', fontsize=10)
+    ax[0].axhline(y=cv_r2_scores.mean(), color='red', linestyle='--', label=f'Average R²: {cv_r2_scores.mean():.3f}')
+    ax[0].legend()
+    
+    # RMSE Scores Bar Plot
+    ax[1].bar(range(1, 6), cv_rmse_scores, color='#FF9999', alpha=0.7)
+    ax[1].set_title('Cross-Validation RMSE Scores per Fold', fontsize=12)
+    ax[1].set_xlabel('Fold', fontsize=10)
+    ax[1].set_ylabel('RMSE', fontsize=10)
+    ax[1].axhline(y=cv_rmse_scores.mean(), color='red', linestyle='--', label=f'Average RMSE: {cv_rmse_scores.mean():.0f}')
+    ax[1].legend()
+    
+    plt.tight_layout()
+    cv_scores_path = os.path.join(output_dir, 'cross_validation_scores.png')
+    plt.savefig(cv_scores_path, bbox_inches='tight')
+    plt.close()
+  ```
 
+  - **Results:**
+    - Cross-Validation R² Scores: [-0.25363327, 0.85779482, 0.59771106, 0.0316324, 0.60434295]
+    - Average R²: 0.368
+    - Standard Deviation of R²: 0.412
+    - Cross-Validation RMSE Scores: [52100.70, 12197.87, 11885.41, 6664.88, 6003.70]
+    - Average RMSE: 17770
+    - Standard Deviation of RMSE: 17355
+    
+ - **Graph:**
+  - ![image](https://github.com/user-attachments/assets/a9989614-9b71-42b0-925f-5c9e34ea9960)
+
+  - **Comment:** The cross-validation results show an average R² of 0.368, lower than the single split (0.574), indicating potential overfitting. The high variability in R² (std dev: 0.412) and RMSE (std dev: 17,355) across folds suggests inconsistent performance, possibly due to data imbalance or limited features.
+
+### Step 6: Random Forest Model and Cross-Validation
+- **Description:** Trained a Random Forest Regressor and evaluated it using 5-fold cross-validation to compare with Decision Tree. Random Forest was chosen to reduce overfitting through ensemble learning.
+- **Code:**
+  ```python
+    from sklearn.ensemble import RandomForestRegressor
+    
+    # Initialize the Random Forest model
+    rf_model = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42)
+    
+    # Perform 5-fold cross-validation for R² score
+    rf_cv_r2_scores = cross_val_score(rf_model, X, y, cv=5, scoring='r2')
+    print("Random Forest Cross-Validation R² Scores:", rf_cv_r2_scores)
+    print("Average R²:", rf_cv_r2_scores.mean())
+    print("Standard Deviation of R²:", rf_cv_r2_scores.std())
+    
+    # Perform 5-fold cross-validation for RMSE
+    rf_cv_mse_scores = cross_val_score(rf_model, X, y, cv=5, scoring='neg_mean_squared_error')
+    rf_cv_rmse_scores = np.sqrt(-rf_cv_mse_scores)
+    print("Random Forest Cross-Validation RMSE Scores:", rf_cv_rmse_scores)
+    print("Average RMSE:", rf_cv_rmse_scores.mean())
+    print("Standard Deviation of RMSE:", rf_cv_rmse_scores.std())
+    
+    # Create bar plot for Random Forest Cross-Validation R² and RMSE scores
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # R² Scores Bar Plot
+    ax[0].bar(range(1, 6), rf_cv_r2_scores, color='#66B2FF', alpha=0.7)
+    ax[0].set_title('Random Forest Cross-Validation R² Scores per Fold', fontsize=12)
+    ax[0].set_xlabel('Fold', fontsize=10)
+    ax[0].set_ylabel('R² Score', fontsize=10)
+    ax[0].axhline(y=rf_cv_r2_scores.mean(), color='red', linestyle='--', label=f'Average R²: {rf_cv_r2_scores.mean():.3f}')
+    ax[0].legend()
+    
+    # RMSE Scores Bar Plot
+    ax[1].bar(range(1, 6), rf_cv_rmse_scores, color='#FF9999', alpha=0.7)
+    ax[1].set_title('Random Forest Cross-Validation RMSE Scores per Fold', fontsize=12)
+    ax[1].set_xlabel('Fold', fontsize=10)
+    ax[1].set_ylabel('RMSE', fontsize=10)
+    ax[1].axhline(y=rf_cv_rmse_scores.mean(), color='red', linestyle='--', label=f'Average RMSE: {rf_cv_rmse_scores.mean():.0f}')
+    ax[1].legend()
+    
+    plt.tight_layout()
+    rf_cv_scores_path = os.path.join(output_dir, 'random_forest_cv_scores.png')
+    plt.savefig(rf_cv_scores_path, bbox_inches='tight')
+    plt.close()
+  ```
+    - **Results:**
+    - Random Forest Cross-Validation R² Scores: [0.39804556, 0.59055053, 0.67240391, 0.41721839, 0.31479105]
+    - Average R²: 0.479
+    - Standard Deviation of R²: 0.132
+    - Random Forest Cross-Validation RMSE Scores: [36102.74, 20697.91, 10725.42, 5170.41, 7900.80]
+    - Average RMSE: 16119
+    - Standard Deviation of RMSE: 11286
+
+  - **Graph:**
+  - ![image](https://github.com/user-attachments/assets/b6bc23cb-7408-4884-99bb-0b554286f37c)
+
+
+  - **Comment:** Random Forest shows an average R² of 0.479 and RMSE of 16,119, with lower variability (std dev R²: 0.132, RMSE: 11,286) compared to Decision Tree, indicating better generalization.
+
+
+
+## Conclusion
+- **Summary:** The Decision Tree model achieved an R² of 0.574 on a single train-test split, but cross-validation showed a lower average R² of 0.368. Random Forest performed better with an average R² of 0.479 and RMSE of 16,119. Key features like owners_numeric and average_completion_time drive predictions in both models.
+- **Model Choice Rationale:** Decision Tree was chosen for its interpretability, while Random Forest was added to improve generalization through ensemble learning.
+- **Model Comparison:** Random Forest outperformed Decision Tree with a higher average R² (0.479 vs 0.368) and lower RMSE (16,119 vs 17,770). It also showed lower variability (std dev R²: 0.132 vs 0.412; RMSE: 11,286 vs 17,355), suggesting better consistency due to its ensemble approach.
+- **Future Improvements:** Hyperparameter tuning (e.g., max_depth, n_estimators) or collecting more data could further enhance performance.
